@@ -79,7 +79,7 @@ public sealed class ReservaRepository
 
     /// <summary>
     /// Atomic reserve: re-checks batch, duplicate and quota inside one transaction,
-    /// then inserts. Returns the outcome so the controller can message the counter.
+    /// then inserts or reactivates a cancelled row. Returns the outcome so the controller can message the counter.
     /// </summary>
     public ReservaTxOutcome ReservarAtomico(DateOnly fecha, string dni, string nombreMenu)
     {
@@ -106,14 +106,28 @@ public sealed class ReservaRepository
             return ReservaTxOutcome.CupoAgotado;
         }
 
-        using var insert = new SqlCommand(
-            "INSERT INTO Reserva (Fecha, Dni, NombreMenu, Estado) VALUES (@fecha, @dni, @menu, @estado);",
-            conn, tx);
-        insert.Parameters.AddWithValue("@fecha", fecha.ToDateTime(TimeOnly.MinValue));
-        insert.Parameters.AddWithValue("@dni", dni);
-        insert.Parameters.AddWithValue("@menu", nombreMenu);
-        insert.Parameters.AddWithValue("@estado", EstadoReserva.NoEntregado);
-        insert.ExecuteNonQuery();
+        if (ExisteCancelada(conn, tx, fecha, dni))
+        {
+            using var update = new SqlCommand(
+                "UPDATE Reserva SET NombreMenu = @menu, Estado = @estado WHERE Fecha = @fecha AND Dni = @dni;",
+                conn, tx);
+            update.Parameters.AddWithValue("@menu", nombreMenu);
+            update.Parameters.AddWithValue("@estado", EstadoReserva.NoEntregado);
+            update.Parameters.AddWithValue("@fecha", fecha.ToDateTime(TimeOnly.MinValue));
+            update.Parameters.AddWithValue("@dni", dni);
+            update.ExecuteNonQuery();
+        }
+        else
+        {
+            using var insert = new SqlCommand(
+                "INSERT INTO Reserva (Fecha, Dni, NombreMenu, Estado) VALUES (@fecha, @dni, @menu, @estado);",
+                conn, tx);
+            insert.Parameters.AddWithValue("@fecha", fecha.ToDateTime(TimeOnly.MinValue));
+            insert.Parameters.AddWithValue("@dni", dni);
+            insert.Parameters.AddWithValue("@menu", nombreMenu);
+            insert.Parameters.AddWithValue("@estado", EstadoReserva.NoEntregado);
+            insert.ExecuteNonQuery();
+        }
 
         tx.Commit();
         return ReservaTxOutcome.Ok;
@@ -170,6 +184,17 @@ public sealed class ReservaRepository
     {
         using var cmd = new SqlCommand(
             "SELECT COUNT(*) FROM Reserva WHERE Fecha = @fecha AND Dni = @dni AND Estado <> @cancelada;",
+            conn, tx);
+        cmd.Parameters.AddWithValue("@fecha", fecha.ToDateTime(TimeOnly.MinValue));
+        cmd.Parameters.AddWithValue("@dni", dni);
+        cmd.Parameters.AddWithValue("@cancelada", EstadoReserva.Cancelada);
+        return (int)cmd.ExecuteScalar()! > 0;
+    }
+
+    private static bool ExisteCancelada(SqlConnection conn, SqlTransaction tx, DateOnly fecha, string dni)
+    {
+        using var cmd = new SqlCommand(
+            "SELECT COUNT(*) FROM Reserva WHERE Fecha = @fecha AND Dni = @dni AND Estado = @cancelada;",
             conn, tx);
         cmd.Parameters.AddWithValue("@fecha", fecha.ToDateTime(TimeOnly.MinValue));
         cmd.Parameters.AddWithValue("@dni", dni);
