@@ -1,3 +1,6 @@
+using System.Configuration;
+using LaOlla.Modelo;
+
 namespace LaOlla.Vista;
 
 static class Program
@@ -8,9 +11,18 @@ static class Program
     [STAThread]
     static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
+        // Connection string lives outside the forms: it is read here once
+        // from App.config and handed to the Modelo layer.
+        string? cadena = ConfigurationManager.ConnectionStrings["LaOlla"]?.ConnectionString;
+        if (string.IsNullOrWhiteSpace(cadena))
+        {
+            MessageBox.Show("Missing connection string 'LaOlla' in App.config.",
+                "La Olla", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+        Db.Configure(cadena);
+
         ApplicationConfiguration.Initialize();
-        Application.Run(new Form1());
-    }    
+        Application.Run(new LoginForm());
+    }
 }
