@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LaOlla.Controlador/LaOlla.Controlador.csproj" />
+    <Project Path="src/LaOlla.Modelo/LaOlla.Modelo.csproj" />
+    <Project Path="src/LaOlla.Vista/LaOlla.Vista.csproj" />
+  </Folder>
+</Solution>
