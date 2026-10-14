@@ -32,20 +32,20 @@ public sealed class AccesoController
     {
         string limpio = (dni ?? "").Trim();
         if (!EsDniValido(limpio))
-            return (false, Rol.Estudiante, "", "Enter a valid DNI (7 or 8 digits).");
+            return (false, Rol.Estudiante, "", "Ingrese un DNI válido (7 u 8 dígitos).");
 
         if (limpio == DniAdmin)
-            return (true, Rol.Admin, "Mostrador", "Welcome, counter.");
+            return (true, Rol.Admin, "Mostrador", "Bienvenido al mostrador.");
 
         Cliente? existente = _clientes.ObtenerPorDni(limpio);
         if (existente is not null)
-            return (true, Rol.Estudiante, existente.Nombre, $"Welcome, {existente.Nombre}.");
+            return (true, Rol.Estudiante, existente.Nombre, $"Bienvenido, {existente.Nombre}.");
 
         string nombre = (nombreSiNuevo ?? "").Trim();
         if (nombre.Length == 0)
-            return (false, Rol.Estudiante, "", "First-time DNI: enter your name to register.");
+            return (false, Rol.Estudiante, "", "DNI nuevo: ingrese su nombre para registrarse.");
         _clientes.Guardar(new Cliente { Dni = limpio, Nombre = nombre });
-        return (true, Rol.Estudiante, nombre, $"Welcome, {nombre}.");
+        return (true, Rol.Estudiante, nombre, $"Bienvenido, {nombre}.");
     }
 
     public static bool EsDniValido(string dni) =>

@@ -17,7 +17,7 @@ public partial class EstudianteForm : Form
     {
         _dni = dni;
         InitializeComponent();
-        lblTitulo.Text = $"Reservations - {nombre} ({dni})";
+        lblTitulo.Text = $"Reservas de {nombre} ({dni})";
         dtpFecha.Value = DateTime.Today.AddDays(1);
         ActualizarCupo();
         ActualizarMias();
@@ -50,14 +50,17 @@ public partial class EstudianteForm : Form
         DateOnly fecha = DateOnly.FromDateTime(dtpFecha.Value);
         var vianda = _viandas.ObtenerVianda(fecha);
         lblCupo.Text = vianda is null
-            ? "No daily batch for that date."
-            : $"{vianda.NombreMenu} - available: {_viandas.CupoDisponible(fecha)} / {vianda.Cupo}";
+            ? "Sin vianda cargada para esta fecha."
+            : $"Cupo disponible: {_viandas.CupoDisponible(fecha)} / {vianda.Cupo} — {vianda.NombreMenu}";
     }
 
     private void ActualizarMias()
     {
         lstMias.Items.Clear();
-        foreach (var r in _reservas.ReservasDe(_dni))
+        var mias = _reservas.ReservasDe(_dni);
+        if (mias.Count == 0)
+            lstMias.Items.Add("Sin reservas registradas.");
+        else foreach (var r in mias)
             lstMias.Items.Add($"{r.Fecha:yyyy-MM-dd} | {r.NombreMenu} | {r.Estado}");
     }
 }

@@ -24,11 +24,11 @@ public sealed class ViandaController
     public Resultado CargarVianda(DateOnly fecha, string nombreMenu, int cupo)
     {
         if (string.IsNullOrWhiteSpace(nombreMenu))
-            return Resultado.Fallo("Enter the menu name for the day.");
+            return Resultado.Fallo("Ingrese el nombre del menú del día.");
         if (cupo <= 0)
-            return Resultado.Fallo("Quota must be greater than zero.");
+            return Resultado.Fallo("El cupo debe ser mayor que cero.");
         if (cupo > CupoMaximo)
-            return Resultado.Fallo($"Quota cannot exceed {CupoMaximo} units per day.");
+            return Resultado.Fallo($"El cupo no puede superar las {CupoMaximo} unidades por día.");
 
         _viandas.Guardar(new Vianda
         {
@@ -36,7 +36,7 @@ public sealed class ViandaController
             NombreMenu = nombreMenu.Trim(),
             Cupo = cupo,
         });
-        return Resultado.Exito($"Daily batch loaded: {nombreMenu.Trim()} for {fecha:yyyy-MM-dd} with quota {cupo}.");
+        return Resultado.Exito($"Vianda cargada: {nombreMenu.Trim()} para el {fecha:yyyy-MM-dd} con cupo {cupo}.");
     }
 
     public Vianda? ObtenerVianda(DateOnly fecha) => _viandas.ObtenerPorFecha(fecha);

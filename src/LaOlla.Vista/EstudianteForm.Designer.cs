@@ -36,7 +36,7 @@ partial class EstudianteForm
         //
         lblTitulo.AutoSize = true;
         lblTitulo.Location = new Point(16, 12);
-        lblTitulo.Text = "Reservations";
+        lblTitulo.Text = "Mis reservas";
         //
         // dtpFecha
         //
@@ -47,16 +47,18 @@ partial class EstudianteForm
         //
         // btnReservar
         //
-        btnReservar.Location = new Point(190, 32);
+        btnReservar.Location = new Point(184, 32);
         btnReservar.Size = new Size(110, 30);
-        btnReservar.Text = "Reserve";
+        btnReservar.TabIndex = 1;
+        btnReservar.Text = "Reservar";
         btnReservar.Click += BtnReservar_Click;
         //
         // btnCancelar
         //
-        btnCancelar.Location = new Point(310, 32);
-        btnCancelar.Size = new Size(110, 30);
-        btnCancelar.Text = "Cancel";
+        btnCancelar.Location = new Point(300, 32);
+        btnCancelar.Size = new Size(122, 30);
+        btnCancelar.TabIndex = 2;
+        btnCancelar.Text = "Cancelar reserva";
         btnCancelar.Click += BtnCancelar_Click;
         //
         // lblCupo
@@ -78,6 +80,7 @@ partial class EstudianteForm
         //
         // EstudianteForm
         //
+        AcceptButton = btnReservar;
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(438, 300);
         Controls.Add(lblTitulo);
@@ -88,7 +91,7 @@ partial class EstudianteForm
         Controls.Add(lstMias);
         Controls.Add(lblMensaje);
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "La Olla - Student";
+        Text = "La Olla - Estudiante";
         ResumeLayout(false);
         PerformLayout();
     }

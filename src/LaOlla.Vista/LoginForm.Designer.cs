@@ -41,24 +41,26 @@ partial class LoginForm
         txtDni.Location = new Point(24, 44);
         txtDni.MaxLength = 8;
         txtDni.Size = new Size(240, 23);
+        txtDni.TabIndex = 0;
         //
         // lblNombre
         //
         lblNombre.AutoSize = true;
         lblNombre.Location = new Point(24, 80);
-        lblNombre.Text = "Name (first visit only)";
+        lblNombre.Text = "Nombre (solo la primera vez)";
         //
         // txtNombre
         //
         txtNombre.Location = new Point(24, 100);
         txtNombre.MaxLength = 80;
         txtNombre.Size = new Size(240, 23);
+        txtNombre.TabIndex = 1;
         //
         // btnIngresar
         //
         btnIngresar.Location = new Point(24, 140);
         btnIngresar.Size = new Size(240, 32);
-        btnIngresar.Text = "Enter";
+        btnIngresar.Text = "Ingresar";
         btnIngresar.Click += BtnIngresar_Click;
         //
         // lblMensaje
@@ -69,6 +71,7 @@ partial class LoginForm
         //
         // LoginForm
         //
+        AcceptButton = btnIngresar;
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(292, 240);
         Controls.Add(lblDni);
@@ -80,7 +83,7 @@ partial class LoginForm
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "La Olla - Enter";
+        Text = "La Olla - Ingreso";
         ResumeLayout(false);
         PerformLayout();
     }

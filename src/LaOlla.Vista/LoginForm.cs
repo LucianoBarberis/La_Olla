@@ -13,6 +13,7 @@ public partial class LoginForm : Form
     public LoginForm()
     {
         InitializeComponent();
+        ActiveControl = txtDni;
     }
 
     private void BtnIngresar_Click(object? sender, EventArgs e)

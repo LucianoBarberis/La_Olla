@@ -51,7 +51,7 @@ partial class AdminForm
         // txtMenu
         //
         txtMenu.Location = new Point(176, 14);
-        txtMenu.PlaceholderText = "Menu name";
+        txtMenu.PlaceholderText = "Nombre del menú";
         txtMenu.Size = new Size(180, 23);
         //
         // numCupo
@@ -66,35 +66,35 @@ partial class AdminForm
         //
         btnCargar.Location = new Point(446, 10);
         btnCargar.Size = new Size(110, 30);
-        btnCargar.Text = "Load batch";
+        btnCargar.Text = "Cargar vianda";
         btnCargar.Click += BtnCargar_Click;
         //
         // txtDni
         //
         txtDni.Location = new Point(16, 52);
         txtDni.MaxLength = 8;
-        txtDni.PlaceholderText = "DNI to deliver";
+        txtDni.PlaceholderText = "DNI para entregar";
         txtDni.Size = new Size(150, 23);
         //
         // btnEntregar
         //
         btnEntregar.Location = new Point(176, 48);
         btnEntregar.Size = new Size(110, 30);
-        btnEntregar.Text = "Deliver";
+        btnEntregar.Text = "Entregar";
         btnEntregar.Click += BtnEntregar_Click;
         //
         // btnNoRetirados
         //
         btnNoRetirados.Location = new Point(296, 48);
         btnNoRetirados.Size = new Size(140, 30);
-        btnNoRetirados.Text = "Mark no-shows";
+        btnNoRetirados.Text = "Marcar no retirados";
         btnNoRetirados.Click += BtnNoRetirados_Click;
         //
         // btnVer
         //
         btnVer.Location = new Point(446, 48);
         btnVer.Size = new Size(110, 30);
-        btnVer.Text = "Refresh";
+        btnVer.Text = "Actualizar";
         btnVer.Click += BtnVer_Click;
         //
         // lblCupo
@@ -130,7 +130,7 @@ partial class AdminForm
         Controls.Add(lstReservas);
         Controls.Add(lblMensaje);
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "La Olla - Counter";
+        Text = "La Olla - Mostrador";
         ((System.ComponentModel.ISupportInitialize)numCupo).EndInit();
         ResumeLayout(false);
         PerformLayout();

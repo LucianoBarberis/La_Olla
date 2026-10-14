@@ -50,11 +50,14 @@ public partial class AdminForm : Form
         DateOnly fecha = DateOnly.FromDateTime(dtpFecha.Value);
         var vianda = _viandas.ObtenerVianda(fecha);
         lblCupo.Text = vianda is null
-            ? "No daily batch for that date."
-            : $"{vianda.NombreMenu} - available: {_viandas.CupoDisponible(fecha)} / {vianda.Cupo}";
+            ? "Sin vianda cargada para esta fecha."
+            : $"Cupo disponible: {_viandas.CupoDisponible(fecha)} / {vianda.Cupo} — {vianda.NombreMenu}";
 
         lstReservas.Items.Clear();
-        foreach (var r in _reservas.ReservasDelDia(fecha))
+        var reservas = _reservas.ReservasDelDia(fecha);
+        if (reservas.Count == 0)
+            lstReservas.Items.Add("Sin reservas para esta fecha.");
+        else foreach (var r in reservas)
             lstReservas.Items.Add($"{r.Dni} | {r.NombreMenu} | {r.Estado}");
     }
 }

@@ -16,7 +16,7 @@ static class Program
         string? cadena = ConfigurationManager.ConnectionStrings["LaOlla"]?.ConnectionString;
         if (string.IsNullOrWhiteSpace(cadena))
         {
-            MessageBox.Show("Missing connection string 'LaOlla' in App.config.",
+            MessageBox.Show("Falta la cadena de conexión 'LaOlla' en App.config.",
                 "La Olla", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }

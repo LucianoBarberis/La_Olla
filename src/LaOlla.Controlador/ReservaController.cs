@@ -42,20 +42,20 @@ public sealed class ReservaController
     {
         string limpio = (dni ?? "").Trim();
         if (!AccesoController.EsDniValido(limpio))
-            return Resultado.Fallo("Enter a valid DNI (7 or 8 digits).");
+            return Resultado.Fallo("Ingrese un DNI válido (7 u 8 dígitos).");
 
         // R2: reservation window 00:00-12:00 on the reservation day.
         DateTime ahora = _reloj();
         if (DateOnly.FromDateTime(ahora) == fecha && TimeOnly.FromDateTime(ahora) > HoraLimiteReserva)
-            return Resultado.Fallo("Reservation time is over (window 00:00-12:00).");
+            return Resultado.Fallo("El horario de reserva finalizó (ventana 00:00-12:00).");
 
         Vianda? vianda = _viandas.ObtenerPorFecha(fecha);
         if (vianda is null)
-            return Resultado.Fallo("No daily batch loaded for that date.");
+            return Resultado.Fallo("Sin vianda cargada para esta fecha.");
 
         // R3: fast pre-check for a clear message; the transaction re-checks atomically.
         if (_reservas.Obtener(fecha, limpio) is { Estado: not EstadoReserva.Cancelada })
-            return Resultado.Fallo("That DNI already has a reservation for the day.");
+            return Resultado.Fallo("Ese DNI ya tiene una reserva para el día.");
 
         // R1: fast pre-check for a clear message; the transaction owns the final word.
         if (_reservas.ContarOcupadas(fecha) >= vianda.Cupo)
@@ -65,18 +65,18 @@ public sealed class ReservaController
         if (_clientes.ObtenerPorDni(limpio) is null)
         {
             if (nombreLimpio.Length == 0)
-                return Resultado.Fallo("First-time DNI: enter your name to register.");
+                return Resultado.Fallo("DNI nuevo: ingrese su nombre para registrarse.");
             _clientes.Guardar(new Cliente { Dni = limpio, Nombre = nombreLimpio });
         }
 
         ReservaTxOutcome outcome = _reservas.ReservarAtomico(fecha, limpio, vianda.NombreMenu);
         return outcome switch
         {
-            ReservaTxOutcome.Ok => Resultado.Exito($"Reservation confirmed for {vianda.NombreMenu}."),
-            ReservaTxOutcome.SinVianda => Resultado.Fallo("No daily batch loaded for that date."),
-            ReservaTxOutcome.Duplicada => Resultado.Fallo("That DNI already has a reservation for the day."),
+            ReservaTxOutcome.Ok => Resultado.Exito($"Reserva confirmada: {vianda.NombreMenu}."),
+            ReservaTxOutcome.SinVianda => Resultado.Fallo("Sin vianda cargada para esta fecha."),
+            ReservaTxOutcome.Duplicada => Resultado.Fallo("Ese DNI ya tiene una reserva para el día."),
             ReservaTxOutcome.CupoAgotado => Resultado.Fallo("Cupo agotado."),
-            _ => Resultado.Fallo("Reservation could not be completed."),
+            _ => Resultado.Fallo("No se pudo completar la reserva."),
         };
     }
 
@@ -87,9 +87,9 @@ public sealed class ReservaController
     {
         Reserva? reserva = _reservas.Obtener(fecha, (dni ?? "").Trim());
         if (reserva is null || reserva.Estado == EstadoReserva.Cancelada)
-            return Resultado.Fallo("No active reservation found for that DNI and date.");
+            return Resultado.Fallo("No hay una reserva activa para ese DNI y esa fecha.");
         _reservas.CambiarEstado(fecha, reserva.Dni, EstadoReserva.Cancelada);
-        return Resultado.Exito("Reservation cancelled; quota released.");
+        return Resultado.Exito("Reserva cancelada; el cupo quedó liberado.");
     }
 
     /// <summary>
@@ -99,11 +99,11 @@ public sealed class ReservaController
     {
         Reserva? reserva = _reservas.Obtener(fecha, (dni ?? "").Trim());
         if (reserva is null || reserva.Estado == EstadoReserva.Cancelada)
-            return Resultado.Fallo("No active reservation found for that DNI and date.");
+            return Resultado.Fallo("No hay una reserva activa para ese DNI y esa fecha.");
         if (reserva.Estado == EstadoReserva.Entregado)
-            return Resultado.Fallo("Reservation already delivered.");
+            return Resultado.Fallo("La reserva ya fue entregada.");
         _reservas.CambiarEstado(fecha, reserva.Dni, EstadoReserva.Entregado);
-        return Resultado.Exito("Reservation marked as delivered.");
+        return Resultado.Exito("Reserva marcada como entregada.");
     }
 
     /// <summary>
@@ -114,11 +114,11 @@ public sealed class ReservaController
     {
         DateTime ahora = _reloj();
         if (DateOnly.FromDateTime(ahora) == fecha && TimeOnly.FromDateTime(ahora) < HoraNoRetirado)
-            return Resultado.Fallo("No-show marking is available after 14:00.");
+            return Resultado.Fallo("El marcado de no retirados está disponible después de las 14:00.");
         int filas = _reservas.MarcarNoRetirados(fecha);
         return Resultado.Exito(filas == 0
-            ? "No pending reservations to mark."
-            : $"{filas} reservation(s) marked as not picked up.");
+            ? "Sin reservas pendientes para marcar."
+            : $"{filas} reserva(s) marcada(s) como no retirada(s).");
     }
 
     public List<Reserva> ReservasDelDia(DateOnly fecha) => _reservas.ListarPorFecha(fecha);
